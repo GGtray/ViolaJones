@@ -29,6 +29,10 @@ the way to compute the number of features are as follow
     feature position  (8, 3)
     feature width  2
     feature height  8
+    
+    
+    
+ ![round1](https://github.com/GGtray/ViolaJones/blob/master/img/Round1.png)
 
 ## Round 3
 
@@ -37,6 +41,7 @@ the way to compute the number of features are as follow
     feature position  (3, 4)
     feature width  2
     feature height  4
+ ![Round3](https://github.com/GGtray/ViolaJones/blob/master/img/Round3.png)
 
 ## Round 5
 
@@ -45,6 +50,8 @@ the way to compute the number of features are as follow
     feature position  (10, 15)
     feature width  2
     feature height  4
+   
+ ![Round5](https://github.com/GGtray/ViolaJones/blob/master/img/Round5.png)
 
 ## Round 10
 
@@ -53,3 +60,5 @@ the way to compute the number of features are as follow
     feature position  (0, 0)
     feature width  2
     feature height  6
+    
+ ![Round10](https://github.com/GGtray/ViolaJones/blob/master/img/Round10.png)
