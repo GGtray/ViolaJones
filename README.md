@@ -42,7 +42,7 @@ the way to compute the number of features are as follow
 
     error rate is  0.25430753901334124
     feature type is  (3, 1)
-    feature position  (0, 15)
+    feature position  (10, 15)
     feature width  2
     feature height  4
 
