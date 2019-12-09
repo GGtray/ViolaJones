@@ -5,9 +5,16 @@ from src.HaarFeature import FeatureTypes
 from console_progressbar import ProgressBar
 from functools import partial
 
+from src.classifiers import ClassifierResult, apply_feature, build_running_sums, find_best_threshold
 
-def _get_feature_vote(feature, image):
-    return feature.get_vote(image)
+
+def _get_feature_value(feature, image):
+    return feature.get_value(image)
+
+
+def weak_classifier(fx, polarity: float, theta: float) -> float:
+    # return 1. if (polarity * f(x)) < (polarity * theta) else 0.
+    return (np.sign((polarity * theta) - (polarity * f(x))) + 1) // 2
 
 
 def adaboost(positive_iis, negative_iis):
@@ -17,13 +24,12 @@ def adaboost(positive_iis, negative_iis):
     :param negative_iis: non_faces_ii_training, ist of integral image of each image in the non-face images set
     """
     # boosting constants
-    min_feature_height = 9
-    max_feature_height = 10
-    min_feature_width = 9
-    max_feature_width = 10
+    min_feature_height = 8
+    max_feature_height = 8
+    min_feature_width = 8
+    max_feature_width = 8
 
-    num_rounds = 5
-
+    num_rounds = 2
     num_pos = len(positive_iis)
     num_neg = len(negative_iis)
     num_imgs = num_pos + num_neg
@@ -37,15 +43,15 @@ def adaboost(positive_iis, negative_iis):
     num_features = len(features)
     feature_indexes = list(range(num_features))
 
-    # Calculating scores
+    # Calculating feature values
     print('Calculating scores for images..')
 
-    votes = np.zeros((num_imgs, num_features))
+    feature_values = np.zeros((num_imgs, num_features))
     pb = ProgressBar(total=num_imgs, prefix='Computing score', suffix='finished', decimals=1, length=50, fill='X',
                      zfill='-')
 
     for i in range(num_imgs):
-        votes[i, :] = np.array(list(map(partial(_get_feature_vote, image=images[i]), features)))
+        feature_values[i, :] = np.array(list(map(partial(_get_feature_value, image=images[i]), features)))
         pb.print_progress_bar(i)
 
     print('\n Score created\n')
@@ -56,57 +62,29 @@ def adaboost(positive_iis, negative_iis):
     pos_weights = np.ones(num_pos) * 1. / (2 * num_pos)
     neg_weights = np.ones(num_neg) * 1. / (2 * num_neg)
     weights = np.hstack((pos_weights, neg_weights))
-    print('weights is', weights)
     labels = np.hstack((np.ones(num_pos), np.ones(num_neg) * -1))
-    print('labels is', labels)
 
     classifiers = []
 
     pb = ProgressBar(total=num_rounds, prefix='Computing score', suffix='finished', decimals=1, length=50, fill='X',
                      zfill='-')
     for i in range(num_rounds):
-
         classification_errors = np.zeros(len(feature_indexes))
 
         # normalize weights
         weights *= 1. / np.sum(weights)
 
         # select best classifier based on the weighted error
-        for f in range(len(feature_indexes)):
-            f_idx = feature_indexes[f]
-            # classifier error is the sum of image weights where the classifier
-            # is right
-            error = sum(
-                map(lambda img_idx:
-                    weights[img_idx]
-                    if labels[img_idx] != votes[img_idx, f_idx]
-                    else 0,
-                    range(num_imgs))
-            )
-            classification_errors[f] = error
+        for featureColidx in range(len(feature_values[0])):
+            featureCol = feature_values[:, featureColidx]
+            p = np.argsort(featureCol)
+            featureColp, labelsp, weightsp = featureCol[p], labels[p], weights[p]
+            t_minus, t_plus, s_minuses, s_pluses = build_running_sums(labelsp, weightsp)
+            currentThreshold, currentPolarity = find_best_threshold(featureColp, t_minus, t_plus, s_minuses, s_pluses)
+            print(currentThreshold, currentPolarity)
 
-        # get best feature, i.e. with smallest error
-        min_error_idx = np.argmin(classification_errors)
-        best_error = classification_errors[min_error_idx]
-        best_feature_idx = feature_indexes[min_error_idx]
-
-        # set feature weight
-        best_feature = features[best_feature_idx]
-        feature_weight = 0.5 * np.log((1 - best_error) / best_error)
-        best_feature.weight = feature_weight
-        classifiers.append(best_feature)
-
-        # update image weights
-        weights = np.array(list(
-            map(lambda img_idx:
-                weights[img_idx] * np.sqrt((1 - best_error) / best_error)
-                if labels[img_idx] != votes[img_idx, best_feature_idx]
-                else weights[img_idx] * np.sqrt(best_error / (1 - best_error)),
-                range(num_imgs))
-        ))
-
-        # remove feature (a feature can't be selected twice)
-        feature_indexes.remove(best_feature_idx)
+            # define weak classifer
+            weak_classifier()
 
         pb.print_progress_bar(i)
 

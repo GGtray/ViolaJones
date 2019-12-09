@@ -4,7 +4,7 @@ import cv2 as cv
 from src.HaarFeature import HaarFeature
 from src.HaarFeature import FeatureTypes
 
-from src.AdaBoost import adaboost
+from src.AdaBoost1 import adaboost
 
 
 pos_training_path = '../dataset/trainset/faces'
