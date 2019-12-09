@@ -94,7 +94,7 @@ def find_best_threshold(zs: np.ndarray, t_minus: float, t_plus: float, s_minuses
             min_e = error_2
             min_z = z
             polarity = 1
-    return [min_z, polarity]
+    return [min_z, polarity, min_e]
 
 
 def determine_threshold_polarity(ys: np.ndarray, ws: np.ndarray, zs: np.ndarray) -> ThresholdPolarity:

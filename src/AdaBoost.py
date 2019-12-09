@@ -1,5 +1,5 @@
 import numpy as np
-from src.HaarFeature import HaarFeature, create_features
+from src.HaarFeature import HaarLikeFeature, create_features
 from src.HaarFeature import FeatureTypes
 
 from console_progressbar import ProgressBar
@@ -10,8 +10,27 @@ def _get_feature_vote(feature, image):
     return feature.get_vote(image)
 
 
-def adaboost(positive_iis, negative_iis):
+def _create_features(img_height, img_width, min_feature_width, max_feature_width, min_feature_height,
+                     max_feature_height):
+    print('Creating haar-like features..')
+    features = []
+    for feature in FeatureTypes:
+        # FeatureTypes are just tuples
+        feature_start_width = max(min_feature_width, feature[0])
+        for feature_width in range(feature_start_width, max_feature_width, feature[0]):
+            feature_start_height = max(min_feature_height, feature[1])
+            for feature_height in range(feature_start_height, max_feature_height, feature[1]):
+                for x in range(img_width - feature_width):
+                    for y in range(img_height - feature_height):
+                        features.append(HaarLikeFeature(feature, (x, y), feature_width, feature_height, 0, 1))
+                        features.append(HaarLikeFeature(feature, (x, y), feature_width, feature_height, 0, -1))
+    print('..done. ' + str(len(features)) + ' features created.\n')
+    return features
+
+
+def adaboost(positive_iis, negative_iis, num_rounds):
     """
+    :param num_rounds:
     :rtype: object
     :param positive_iis: faces_ii_training, list of integral image of each image in the face images set
     :param negative_iis: non_faces_ii_training, ist of integral image of each image in the non-face images set
@@ -22,8 +41,6 @@ def adaboost(positive_iis, negative_iis):
     min_feature_width = 9
     max_feature_width = 10
 
-    num_rounds = 5
-
     num_pos = len(positive_iis)
     num_neg = len(negative_iis)
     num_imgs = num_pos + num_neg
@@ -32,8 +49,8 @@ def adaboost(positive_iis, negative_iis):
     images = positive_iis + negative_iis
 
     # Create features for all sizes and locations
-    features = create_features(img_height, img_width, min_feature_width, max_feature_width, min_feature_height,
-                               max_feature_height)
+    features = _create_features(img_height, img_width, min_feature_width, max_feature_width, min_feature_height,
+                                max_feature_height)
     num_features = len(features)
     feature_indexes = list(range(num_features))
 
@@ -56,9 +73,8 @@ def adaboost(positive_iis, negative_iis):
     pos_weights = np.ones(num_pos) * 1. / (2 * num_pos)
     neg_weights = np.ones(num_neg) * 1. / (2 * num_neg)
     weights = np.hstack((pos_weights, neg_weights))
-    print('weights is', weights)
     labels = np.hstack((np.ones(num_pos), np.ones(num_neg) * -1))
-    print('labels is', labels)
+
 
     classifiers = []
 

@@ -80,8 +80,8 @@ def adaboost(positive_iis, negative_iis):
             p = np.argsort(featureCol)
             featureColp, labelsp, weightsp = featureCol[p], labels[p], weights[p]
             t_minus, t_plus, s_minuses, s_pluses = build_running_sums(labelsp, weightsp)
-            currentThreshold, currentPolarity = find_best_threshold(featureColp, t_minus, t_plus, s_minuses, s_pluses)
-            print(currentThreshold, currentPolarity)
+            currentThreshold, currentPolarity, min_error = find_best_threshold(featureColp, t_minus, t_plus, s_minuses, s_pluses)
+            # print(currentThreshold, currentPolarity, min_error)
 
             # define weak classifer
             weak_classifier()
