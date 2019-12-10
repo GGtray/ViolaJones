@@ -113,3 +113,81 @@ In my program, the weak classifier is modeled as a class, becase each weak class
     feature height  6
     
  ![Round10](https://github.com/GGtray/ViolaJones/blob/master/img/Round10.png)
+ 
+ # Justification of the threshold
+
+from my perspective, to replace the empirical error with the false positive, or the false negative, we just need a little change when we are conducting the boosting.
+
+That change takes place in the process when we select the best threshold for each feature. If we are using the empirical error, we want to minimize the total error, and we do as follow:
+
+    def find_best_threshold(samples: np.ndarray, t_minus: float, t_plus: float, s_minuses: List[float],
+                            s_pluses: List[float]):
+        min_e = float('inf')
+        min_z, polarity = 0, 0
+        for z, s_m, s_p in zip(samples, s_minuses, s_pluses):
+            error_1 = s_p + (t_minus - s_m)
+            error_2 = s_m + (t_plus - s_p)
+            if error_1 < min_e:
+                min_e = error_1
+                min_z = z
+                polarity = -1
+            elif error_2 < min_e:
+                min_e = error_2
+                min_z = z
+                polarity = 1
+        return [min_z, polarity, min_e]
+
+and for the false positive, we change the code to 
+
+    def find_best_threshold_false_positive(samples: np.ndarray, t_minus: float, t_plus: float, s_minuses: List[float],
+                                            s_pluses: List[float]):
+        min_false_positive = float('inf')
+        best_threshold, polarity = 0, 0
+        for sample_value, s_m, s_p in zip(samples, s_minuses, s_pluses):
+            error_1 = s_p
+            error_2 = s_m
+            if error_1 < min_false_positive:
+                min_false_positive = s_p
+                best_threshold = sample_value
+                polarity = -1
+            elif error_2 < min_false_positive:
+                min_false_positive = s_m
+                best_threshold = sample_value
+                polarity = 1
+        return [best_threshold, polarity, min_false_positive]
+
+since for now, we are searching the minimum false positive
+
+Similarly, for boosting based on false negative, we find the best threshold as below
+
+    def find_best_threshold_false_negative(samples: np.ndarray, t_minus: float, t_plus: float, s_minuses: List[float],
+                                            s_pluses: List[float]):
+        min_false_negative = float('inf')
+        best_threshold, polarity = 0, 0
+        for sample_value, s_m, s_p in zip(samples, s_minuses, s_pluses):
+            error_1 = t_minus - s_m
+            error_2 = t_plus - s_p
+            if error_1 < min_false_negative:
+                min_false_negative = error_1
+                best_threshold = sample_value
+                polarity = -1
+            elif error_2 < min_false_negative:
+                best_threshold = sample_value
+                min_z = z
+                polarity = 1
+        return [best_threshold, polarity, min_false_negative]
+
+## Experiment
+
+for 
+
+    min_feature_height = 6
+    max_feature_height = 8
+    min_feature_width = 6
+    max_feature_width = 8
+
+boosting on empirical error
+
+    false positive is  0.7309322033898306
+    false negative is  0.09145427286356822
+    accuracy is  0.7864941366761019
