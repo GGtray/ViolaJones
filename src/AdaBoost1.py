@@ -3,7 +3,7 @@ import numpy as np
 from src.HaarFeature import create_features
 from console_progressbar import ProgressBar
 from functools import partial
-from src.classifiers import WeakClassifier
+from src.classifiers import WeakClassifier, find_best_threshold_false_positive
 
 from src.classifiers import build_running_sums, find_best_threshold
 
@@ -104,6 +104,8 @@ def adaboost(positive_iis, negative_iis, min_feature_height, max_feature_height,
             t_minus, t_plus, s_minuses, s_pluses = build_running_sums(labels_p, weights_p)
             currentThreshold, currentPolarity, min_error = find_best_threshold(sampleCol_p, t_minus, t_plus, s_minuses,
                                                                                s_pluses)
+            # currentThreshold, currentPolarity, min_error = find_best_threshold_false_positive(sampleCol_p, t_minus, t_plus, s_minuses,
+            #                                                                    s_pluses)
             error_each_feature_list.append(min_error)
             threshold_list.append(currentThreshold)
             polarity_list.append(currentPolarity)
@@ -118,8 +120,8 @@ def adaboost(positive_iis, negative_iis, min_feature_height, max_feature_height,
         print('feature width ', features[best_feature_idx].width)
         print('feature height ', features[best_feature_idx].height)
 
-        best_feature = features[best_feature_idx]
-        feature_weight = 0.5 * np.log((1 - best_error) / best_error)
+        # best_feature = features[best_feature_idx]
+        # feature_weight = 0.5 * np.log((1 - best_error) / best_error)
 
         # update image weights
         beta = best_error / (1 - best_error)
