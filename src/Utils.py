@@ -2,7 +2,7 @@ import numpy as np
 from PIL import Image
 import os
 from functools import partial
-import cv2
+
 
 def ensemble_vote(int_img, classifiers):
     """
