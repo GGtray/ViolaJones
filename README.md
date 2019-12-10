@@ -28,7 +28,7 @@ the way to compute the number of features are as follow
 
 adaboost need weak classifiers that are easily generated. In this project, the classifiers we are dealing with is so called stump classifiers:
 
-$$h(x, p, \theta, f) = \begin{cases} 1 & px(f) < p\theta\\ -1 & otherwise\end{cases}$$
+<a href="https://www.codecogs.com/eqnedit.php?latex=$$h(x,&space;p,&space;\theta,&space;f)&space;=&space;\begin{cases}&space;1&space;&&space;px(f)&space;<&space;p\theta\&space;-1&space;&&space;otherwise\end{cases}$$" target="_blank"><img src="https://latex.codecogs.com/gif.latex?$$h(x,&space;p,&space;\theta,&space;f)&space;=&space;\begin{cases}&space;1&space;&&space;px(f)&space;<&space;p\theta\&space;-1&space;&&space;otherwise\end{cases}$$" title="$$h(x, p, \theta, f) = \begin{cases} 1 & px(f) < p\theta\ -1 & otherwise\end{cases}$$" /></a>
 
 the implementation of this classifier is a class
 
