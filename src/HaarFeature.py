@@ -18,11 +18,11 @@ def create_features(img_height: int, img_width: int, min_feature_width: int, max
     create features given image parameter
     :param img_height: height of the image, constant
     :param img_width: width of the image, constant
-    :param min_feature_width: the minimum of
-    :param max_feature_width:
-    :param min_feature_height:
-    :param max_feature_height:
-    :return:
+    :param min_feature_width: the minimum of feature width
+    :param max_feature_width: the maxinum of feature width
+    :param min_feature_height: the minimum of feature height
+    :param max_feature_height: the maximum of feature height
+    :return: a list of HaarFeature instances
     """
     print('Creating features ...')
     features = []
@@ -51,7 +51,7 @@ class HaarFeature(object):
 
     def get_feature_value(self, integral_img):
         """
-        Get score for given integral image array.
+        Get the  for given integral image array.
         :param integral_img: Integral image array
         :type integral_img: numpy.ndarray
         :return: Score for given feature
@@ -106,7 +106,7 @@ class HaarFeature(object):
 
     def get_value(self, integral_img):
         """
-        Get vote of this feature for given integral image.
+        Get value of this feature for given integral image.
         :param integral_img:
         :param int_img: Integral image array
         :type int_img: numpy.ndarray
