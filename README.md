@@ -67,9 +67,15 @@ the correctness of this method can be explained by exploring the semantic meanin
 S_plus + (T_minus - S_minus) represents the total weighted error that if you label all the sample negative before current example. because the S_plus means the error this hypothesis made before current example, while the (T_minus - S_minus) means the error after current example. In this case, polarity is 1
 
 S_minus + (T_plus - S_plus) is the opposite case, which is when you label all the sample positive before current example. In this case, polarity is -1.
-## Round 1
 
-    error rate is  0.12808216432865743
+After each sucessful selection of the weak classifier, we updated the weighted error vector based on this error. then goes to anthoer round. Finally we assemble these weak classifiers to build a strong classifier.
+
+In my program, the weak classifier is modeled as a class, becase each weak classifier has its own state: polarity, threshold, and coeffient alpha.
+
+## Experiment
+### Round 1
+
+    weighted error rate is  0.12808216432865743
     feature type is  (1, 2)
     feature position  (8, 3)
     feature width  2
@@ -79,18 +85,18 @@ S_minus + (T_plus - S_plus) is the opposite case, which is when you label all th
     
  ![round1](https://github.com/GGtray/ViolaJones/blob/master/img/Round1.png)
 
-## Round 3
+### Round 3
 
-    error rate is  0.22950280548561788
+    weighted error rate is  0.22950280548561788
     feature type is  (2, 1)
     feature position  (3, 4)
     feature width  2
     feature height  4
  ![Round3](https://github.com/GGtray/ViolaJones/blob/master/img/Round3.png)
 
-## Round 5
+### Round 5
 
-    error rate is  0.25430753901334124
+    weighted error rate is  0.25430753901334124
     feature type is  (3, 1)
     feature position  (10, 15)
     feature width  2
@@ -98,9 +104,9 @@ S_minus + (T_plus - S_plus) is the opposite case, which is when you label all th
    
  ![Round5](https://github.com/GGtray/ViolaJones/blob/master/img/Round5.png)
 
-## Round 10
+### Round 10
 
-    error rate is  0.2614991947946847
+    weighted error rate is  0.2614991947946847
     feature type is  (2, 2)
     feature position  (0, 0)
     feature width  2
