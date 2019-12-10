@@ -11,7 +11,7 @@ class WeakClassifier:
         self.alpha = alpha
 
     def get_vote(self, x) -> int:
-        return 1 if (self.polarity * x[self.feature_idx]) < (self.polarity * self.threshold) else -1
+        return 1 if (self.polarity * x[self.feature_idx]) > (self.polarity * self.threshold) else -1
 
 # def build_StrongClassifier():
 #     return

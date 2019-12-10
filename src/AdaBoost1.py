@@ -1,5 +1,4 @@
 import numpy as np
-from numpy.core._multiarray_umath import ndarray
 
 from src.HaarFeature import create_features
 from console_progressbar import ProgressBar
@@ -26,22 +25,28 @@ def weak_classifier(x_feature: float, polarity: float, threshold: float) -> int:
     # return (np.sign((polarity * theta) - (polarity * x_feature)) + 1) // 2
 
 
-# def strong_classifer(weak_classifiers: list) -> :
+def strong_classifier(weak_classifiers: list, x) -> int:
+    weak_vote = []
+    alpha_list = []
+    for i in range(len(weak_classifiers)):
+        weak_vote.append(weak_classifiers[i].get_vote(x))
+        alpha_list.append(weak_classifiers[i].alpha)
+
+    return np.sign(sum(np.multiply(weak_vote, alpha_list)))
 
 
-def adaboost(positive_iis, negative_iis, num_rounds=2) -> list:
+def adaboost(positive_iis, negative_iis, min_feature_height, max_feature_height, min_feature_width, max_feature_width, num_rounds=2) -> list:
     """
     AdaBoosting step for the face Detection, return all weak classifiers
+    :param max_feature_width:
+    :param min_feature_width:
+    :param max_feature_height:
+    :param min_feature_height:
     :param num_rounds: number of the adaboosting rounds
     :param positive_iis: faces_ii_training, list of integral image of each image in the face images set
     :param negative_iis: non_faces_ii_training, ist of integral image of each image in the non-face images set
     :rtype: a list of classifiers
     """
-    # feature extracting constants, which determines how many features will be generated
-    min_feature_height = 8
-    max_feature_height = 8
-    min_feature_width = 8
-    max_feature_width = 8
 
     num_pos = len(positive_iis)
     num_neg = len(negative_iis)
@@ -54,11 +59,10 @@ def adaboost(positive_iis, negative_iis, num_rounds=2) -> list:
     features = create_features(img_height, img_width, min_feature_width, max_feature_width, min_feature_height,
                                max_feature_height)
     num_features = len(features)
-    feature_indexes = list(range(num_features))
+    # feature_indexes = list(range(num_features))
 
     # Calculating feature values
     print('Calculating scores for images..')
-
     feature_values = np.zeros((num_imgs, num_features))
     pb = ProgressBar(total=num_imgs, prefix='Computing score', suffix='finished', decimals=1, length=50, fill='X',
                      zfill='-')
@@ -66,7 +70,6 @@ def adaboost(positive_iis, negative_iis, num_rounds=2) -> list:
     for i in range(num_imgs):
         pb.print_progress_bar(i)
         feature_values[i, :] = np.array(list(map(partial(_get_feature_value, image=images[i]), features)))
-
 
     print('\n Score created\n')
 
@@ -84,7 +87,6 @@ def adaboost(positive_iis, negative_iis, num_rounds=2) -> list:
                      zfill='-')
     for i in range(num_rounds):
         pb.print_progress_bar(i)
-
 
         # normalize weights
         weights *= 1. / np.sum(weights)
@@ -107,7 +109,7 @@ def adaboost(positive_iis, negative_iis, num_rounds=2) -> list:
             polarity_list.append(currentPolarity)
             classification_errors.append(min_error)
 
-        best_feature_idx: ndarray[int] = np.argmin(error_each_feature_list)
+        best_feature_idx = np.argmin(error_each_feature_list)
         best_feature_idx.astype(np.int)
         best_error = error_each_feature_list[best_feature_idx]
         print('\n feature number ', best_feature_idx)
@@ -119,9 +121,9 @@ def adaboost(positive_iis, negative_iis, num_rounds=2) -> list:
         best_feature = features[best_feature_idx]
         feature_weight = 0.5 * np.log((1 - best_error) / best_error)
 
-        # classifiers.append(WeakClassifer())
-
         # update image weights
+        beta = best_error / (1 - best_error)
+        alpha = np.log(1 / beta)
         weights = np.array(list(
             map(lambda img_idx:
                 weights[img_idx] * np.sqrt((1 - best_error) / best_error)
@@ -132,8 +134,10 @@ def adaboost(positive_iis, negative_iis, num_rounds=2) -> list:
                 range(num_imgs))
         ))
 
-        # remove feature (a feature can't be selected twice)
-        feature_indexes.remove(best_feature_idx)
+        # # remove feature (a feature can't be selected twice)
+        # feature_indexes.remove(best_feature_idx)
+        weak_classifiers.append(
+            WeakClassifier(threshold_list[best_feature_idx], polarity_list[best_feature_idx], best_feature_idx, alpha))
 
     print('\n done with boosting')
 
