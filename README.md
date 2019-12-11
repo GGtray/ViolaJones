@@ -116,7 +116,6 @@ In my program, the weak classifier is modeled as a class, becase each weak class
  
  ## The Boosting process
  
- 
  ## Experiment
  for 
 
@@ -152,6 +151,14 @@ the boosting result is
     false positive is  0.6546610169491526
     false negative is  0.05347326336831584
     accuracy is  0.831783259199353
+
+## Reason of performance Improvement
+We can see the accuracy is improved along with the round going. the reason is Adaboosting.
+For each round, we selected a decision stump classifier which classified all samples with minimum weighted error, since the weighted error has been updated, this classifier put more attention on the samples which mis-classified by the exact previous classifier. thus we can see that the weighted error has no improvement, even became larger, becasue the classifiers are bouncing on the samples which is very hard to be classified.
+
+But we can notice another fact, that is the accuracy is improved, why? becasue there is a constant associated with each classifier: alpha, which is smaller when the weighted error is larger, since the accuracy is measured by the strong classifier that is build by assembling these weak classifier, we can see that, if a weak classifier made a lot of mistake, we lower the weight of its vote, ensure that the accuracy can be improved.
+
+Talking about another phenomeon: the false positive is hardly imporved. I think the reason is because the training feature is not enough. Although we do not need that many features to recognize a face, these features still need to be boosted from a large set of features, which is time consuming. As an experiment, I pick a small set of features to boost, which has some side-effects: the Adaboost may pick sub-optimal features, since we only pick one best feature each round, and give these feature low threshold. Thus the feature may be mistakely found in a non-face picture, since the threshold is not hight.
  
  # Justification of the threshold
 
