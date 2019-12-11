@@ -114,6 +114,45 @@ In my program, the weak classifier is modeled as a class, becase each weak class
     
  ![Round10](https://github.com/GGtray/ViolaJones/blob/master/img/Round10.png)
  
+ ## The Boosting process
+ 
+ 
+ ## Experiment
+ for 
+
+    min_feature_height = 6
+    max_feature_height = 8
+    min_feature_width = 6
+    max_feature_width = 8
+
+it has 4654 features for total
+
+the boosting result is 
+
+### round 1
+
+    false positive is  0.3177966101694915
+    false negative is  0.20589705147426288
+    accuracy is  0.772745653052972
+
+### round 3
+
+    false positive is  0.6483050847457628
+    false negative is  0.11294352823588207
+    accuracy is  0.7848766680145572
+
+### round 5
+
+    false positive is  0.7309322033898306
+    false negative is  0.09145427286356822
+    accuracy is  0.7864941366761019
+
+### round 10
+
+    false positive is  0.6546610169491526
+    false negative is  0.05347326336831584
+    accuracy is  0.831783259199353
+ 
  # Justification of the threshold
 
 from my perspective, to replace the empirical error with the false positive, or the false negative, we just need a little change when we are conducting the boosting.
