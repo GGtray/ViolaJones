@@ -191,3 +191,15 @@ boosting on empirical error
     false positive is  0.7309322033898306
     false negative is  0.09145427286356822
     accuracy is  0.7864941366761019
+    
+boosting on false positivie 
+
+    false positive is  0.0
+    false negative is  1.0
+    accuracy is  0.19086130206227253
+
+boosting on false negative
+
+    false positive is  1.0
+    false negative is  0.0009995002498750624
+    accuracy is  0.8083299636069551
